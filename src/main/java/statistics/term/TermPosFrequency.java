@@ -19,18 +19,27 @@ public class TermPosFrequency {
 
     Pattern pattern = Pattern.compile("\\)|\\(|,");
 
-    public TermPosFrequency() throws IOException {
+    public TermPosFrequency()throws IOException {
+        this(Integer.MAX_VALUE);
+    }
+
+    public TermPosFrequency(int topTerms) throws IOException {
         // read t_pos_freq.txt
         String file = getClass().getClassLoader().getResources("statistics/t_pos_freq.txt").nextElement().toString().replace("file:/", "").replace("%20"," ");
+        int count = 0;
         try (BufferedReader br = new BufferedReader(new FileReader(file))) {
             String line;
-            while ((line = br.readLine()) != null) {
+            while ((line = br.readLine()) != null && ++count < topTerms) {
                 String[] split = pattern.split(line);
                 t_pos_freq.put(split[2], Integer.valueOf(split[1]));
             }
         } catch (IOException e) {
             e.printStackTrace();
         }
+    }
+
+    public int frequency(String term, String pos) {
+        return t_pos_freq.get(term+"\t"+pos);
     }
 
     public static void main(String[] args) throws IOException {
